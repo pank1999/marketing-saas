@@ -2,11 +2,19 @@
   "name": "@marketing-saas/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "frontend": "npx nx serve frontend",
+    "server": "npx nx serve server"
+  },
   "private": true,
   "dependencies": {
     "axios": "^1.6.0",
+    "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
     "express": "^4.18.1",
+    "express-validator": "^7.2.0",
+    "jsonwebtoken": "^9.0.2",
     "next": "14.2.16",
     "react": "18.3.1",
     "react-dom": "18.3.1"
