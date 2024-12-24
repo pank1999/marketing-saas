@@ -8,6 +8,8 @@ import * as path from 'path';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import authRoutes from './routes/auth.routes';
+import projectRoutes from './routes/project.routes';
+import conditionRoutes from './routes/condition.routes';
 
 const app = express();
 
@@ -19,6 +21,8 @@ app.use('/assets', express.static(path.join(__dirname, 'assets')));
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/projects', projectRoutes);
+app.use('/api/conditions', conditionRoutes);
 
 app.get('/api', (req, res) => {
   res.send({ message: 'Welcome to server!' });

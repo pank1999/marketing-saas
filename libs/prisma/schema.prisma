@@ -29,6 +29,24 @@ model Project {
   description String?
   user        User     @relation(fields: [userId], references: [id])
   userId      Int
+  conditions  Condition[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model Condition {
+  id          Int           @id @default(autoincrement())
+  type        ConditionType
+  value       String   
+  variation   String   
+  projectId   Int
+  project     Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+enum ConditionType {
+  TIME_OF_DAY
+  WEATHER
+  TEMPERATURE
 }
