@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { authService } from '../../../../services/auth.service';
 import Conditions from './conditions';
+import ScriptInfo from './script-info';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
 
@@ -129,7 +130,8 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
         </div>
 
         {isEditing ? (
-          <form onSubmit={handleUpdate} className="space-y-4">
+          <form onSubmit={handleUpdate} className="space-y-4 border-2 p-4 border-gray-300 rounded-lg">
+            <span className="text-lg font-semibold">Edit Details</span>
             <div>
               <label className="block text-sm font-medium text-gray-700">
                 Project Name
@@ -140,7 +142,7 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
                 onChange={(e) =>
                   setEditForm({ ...editForm, name: e.target.value })
                 }
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="mt-1 p-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               />
             </div>
             <div>
@@ -153,7 +155,7 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
                   setEditForm({ ...editForm, description: e.target.value })
                 }
                 rows={3}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                className="mt-1 p-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               />
             </div>
             <div className="flex justify-end space-x-2">
@@ -189,6 +191,7 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
         )}
 
         <Conditions projectId={project.id} />
+        <ScriptInfo projectId={project.id} />
       </div>
     </div>
   );

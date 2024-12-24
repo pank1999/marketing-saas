@@ -157,7 +157,7 @@ export default function DashboardPage() {
                     onChange={(e) =>
                       setNewProject({ ...newProject, name: e.target.value })
                     }
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    className="mt-1 block p-2 w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                   />
                 </div>
                 <div>
@@ -170,7 +170,7 @@ export default function DashboardPage() {
                       setNewProject({ ...newProject, description: e.target.value })
                     }
                     rows={3}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    className="mt-1 block p-2 w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                   />
                 </div>
                 <div className="flex justify-end space-x-3">

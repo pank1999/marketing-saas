@@ -193,7 +193,7 @@ export default function Conditions({ projectId }: ConditionsProps) {
                         value: '', // Reset value when type changes
                       })
                     }
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    className="mt-1 p-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                   >
                     {Object.values(ConditionType).map((type) => (
                       <option key={type} value={type}>
@@ -211,7 +211,7 @@ export default function Conditions({ projectId }: ConditionsProps) {
                     onChange={(e) =>
                       setNewCondition({ ...newCondition, value: e.target.value })
                     }
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    className="mt-1 p-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                   >
                     <option value="">Select a value</option>
                     {getValueOptions(newCondition.type).map((value) => (
@@ -232,7 +232,7 @@ export default function Conditions({ projectId }: ConditionsProps) {
                       setNewCondition({ ...newCondition, variation: e.target.value })
                     }
                     placeholder="e.g., ?variation=a"
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    className="mt-1 p-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                   />
                 </div>
                 <div className="flex justify-end space-x-3">
