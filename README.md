@@ -1,82 +1,188 @@
-# MarketingSaas
+# Marketing SaaS - Dynamic Content Platform
 
-<a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
+A powerful marketing platform that allows you to serve dynamic content based on various conditions like time of day, weather, and temperature. Built with Next.js, Express, and Prisma.
 
-✨ Your new, shiny [Nx workspace](https://nx.dev) is almost ready ✨.
+## Features
 
-[Learn more about this workspace setup and its capabilities](https://nx.dev/nx-api/next?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects) or run `npx nx graph` to visually explore what was created. Now, let's get you up to speed!
+- **Dynamic Content Variations**: Serve different content based on:
+  - Time of day (Morning, Afternoon, Evening, Night)
+  - Weather conditions (Sunny, Cloudy, Rainy, Snowy)
+  - Temperature ranges
+- **Project Management**: Create and manage multiple projects
+- **Domain Validation**: Control which domains can use your dynamic scripts
+- **Easy Integration**: Simple script tag integration for any website
+- **Real-time Updates**: Content updates without page reload
+- **Secure Authentication**: JWT-based authentication system
 
-## Finish your CI setup
+## Tech Stack
 
-[Click here to finish setting up your workspace!](https://cloud.nx.app/connect/xqQtcCscK7)
+- **Frontend**: Next.js with TypeScript and Tailwind CSS
+- **Backend**: Express.js with TypeScript
+- **Database**: PostgreSQL with Prisma ORM
+- **Authentication**: JWT
+- **API Integration**: OpenWeatherMap API for weather data
+- **Development**: Nx monorepo
 
+## Prerequisites
 
-## Run tasks
+- Node.js (v16 or higher)
+- Docker and Docker Compose
+- PostgreSQL (via Docker)
+- OpenWeatherMap API key
 
-To run the dev server for your app, use:
+## Local Development Setup
 
-```sh
-npx nx dev frontend
+1. **Clone the Repository**
+
+   ```bash
+   git clone <repository-url>
+   cd marketing-saas
+   ```
+
+2. **Install Dependencies**
+
+   ```bash
+   npm install
+   ```
+
+3. **Environment Setup**
+
+   Create a `.env` file in the root directory:
+
+   ```env
+   # Database Configuration
+   DATABASE_URL="postgresql://db_user:postgres@localhost:5432/marketing_saas_db?schema=public"
+   POSTGRES_USER=db_user
+   POSTGRES_PASSWORD=postgres
+   POSTGRES_DB=marketing_saas_db
+
+   # JWT Configuration
+   JWT_SECRET=your-super-secret-jwt-key-change-in-production
+   JWT_EXPIRES_IN=24h
+
+   # API Configuration
+   PORT=3000
+   NEXT_PUBLIC_API_URL=http://localhost:3000/api
+
+   # OpenWeather API
+   OPENWEATHER_API_KEY=your-api-key
+   ```
+
+4. **Start the Database**
+
+   ```bash
+   docker-compose up -d
+   ```
+
+5. **Run Database Migrations**
+
+   ```bash
+   npx prisma migrate dev
+   ```
+
+6. **Start the Development Servers**
+
+   In separate terminals:
+
+   ```bash
+   # Start the backend server
+   npx nx serve server
+
+   # Start the frontend development server
+   npx nx serve frontend
+   ```
+
+   The application will be available at:
+
+   - Frontend: http://localhost:4200
+   - Backend API: http://localhost:3000/api
+
+## Project Structure
+
+```
+marketing-saas/
+├── apps/
+│   ├── frontend/          # Next.js frontend application
+│   │   ├── app/          # Next.js app directory
+│   │   ├── services/     # Frontend services
+│   │   └── types/        # TypeScript types
+│   └── server/           # Express backend application
+│       ├── src/
+│       │   ├── controllers/
+│       │   ├── middleware/
+│       │   ├── routes/
+│       │   └── services/
+├── libs/
+│   └── prisma/           # Shared Prisma configuration
+└── docker-compose.yml    # Docker configuration
 ```
 
-To create a production bundle:
+## Usage
 
-```sh
-npx nx build frontend
+1. **Create an Account**
+
+   - Sign up at `/signup`
+   - Log in with your credentials
+
+2. **Create a Project**
+
+   - Navigate to the dashboard
+   - Click "New Project"
+   - Fill in project details
+
+3. **Configure Conditions**
+
+   - Go to project details
+   - Add conditions for:
+     - Time of day
+     - Weather
+     - Temperature
+   - Specify variations for each condition
+
+4. **Integration**
+
+   - Add allowed domains
+   - Copy the provided script tag
+   - Add it to your website's HTML
+
+5. **Testing**
+   - The script will automatically:
+     - Check current conditions
+     - Update URL parameters
+     - Trigger content variations
+
+## Available Scripts
+
+```bash
+# Development
+npx nx serve frontend    # Start frontend development server
+npx nx serve server     # Start backend development server
+
+# Building
+npx nx build frontend   # Build frontend for production
+npx nx build server    # Build backend for production
+
+# Testing
+npx nx test frontend    # Run frontend tests
+npx nx test server     # Run backend tests
+
+# Linting
+npx nx lint frontend    # Lint frontend code
+npx nx lint server     # Lint backend code
 ```
 
-To see all available targets to run for a project, run:
+## Contributing
 
-```sh
-npx nx show project frontend
-```
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
 
-These targets are either [inferred automatically](https://nx.dev/concepts/inferred-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or defined in the `project.json` or `package.json` files.
+## License
 
-[More about running tasks in the docs &raquo;](https://nx.dev/features/run-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-## Add new projects
+## Support
 
-While you could add new projects to your workspace manually, you might want to leverage [Nx plugins](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) and their [code generation](https://nx.dev/features/generate-code?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) feature.
-
-Use the plugin's generator to create new projects.
-
-To generate a new application, use:
-
-```sh
-npx nx g @nx/next:app demo
-```
-
-To generate a new library, use:
-
-```sh
-npx nx g @nx/react:lib mylib
-```
-
-You can use `npx nx list` to get a list of installed plugins. Then, run `npx nx list <plugin-name>` to learn about more specific capabilities of a particular plugin. Alternatively, [install Nx Console](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) to browse plugins and generators in your IDE.
-
-[Learn more about Nx plugins &raquo;](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) | [Browse the plugin registry &raquo;](https://nx.dev/plugin-registry?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-
-[Learn more about Nx on CI](https://nx.dev/ci/intro/ci-with-nx#ready-get-started-with-your-provider?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Install Nx Console
-
-Nx Console is an editor extension that enriches your developer experience. It lets you run tasks, generate code, and improves code autocompletion in your IDE. It is available for VSCode and IntelliJ.
-
-[Install Nx Console &raquo;](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Useful links
-
-Learn more:
-
-- [Learn more about this workspace setup](https://nx.dev/nx-api/next?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects)
-- [Learn about Nx on CI](https://nx.dev/ci/intro/ci-with-nx?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Releasing Packages with Nx release](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [What are Nx plugins?](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-And join the Nx community:
-- [Discord](https://go.nx.dev/community)
-- [Follow us on X](https://twitter.com/nxdevtools) or [LinkedIn](https://www.linkedin.com/company/nrwl)
-- [Our Youtube channel](https://www.youtube.com/@nxdevtools)
-- [Our blog](https://nx.dev/blog?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+For support, email support@example.com or create an issue in the repository.
