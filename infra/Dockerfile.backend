@@ -15,6 +15,8 @@ COPY libs ./libs
 # Install dependencies
 RUN npm ci --legacy-peer-deps
 
+RUN nx reset
+
 # Build the application
 RUN npx nx build server
 
