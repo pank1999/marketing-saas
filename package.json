@@ -4,7 +4,13 @@
   "license": "MIT",
   "scripts": {
     "frontend": "npx nx serve frontend",
-    "server": "npx nx serve server"
+    "server": "npx nx serve server",
+    "test:backend": "nx test server",
+    "test:frontend": "nx test frontend",
+    "build:backend": "nx build server",
+    "build:frontend": "nx build frontend",
+    "start:backend": "nx serve server",
+    "start:frontend": "nx serve frontend"
   },
   "private": true,
   "dependencies": {

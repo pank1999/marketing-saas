@@ -1,0 +1,101 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  DOCKER_BACKEND_IMAGE: ${{ secrets.DOCKER_USERNAME }}/marketing-saas-backend
+  DOCKER_FRONTEND_IMAGE: ${{ secrets.DOCKER_USERNAME }}/marketing-saas-frontend
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: |
+          npm run test:backend
+          npm run test:frontend
+
+  build-and-push:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push Backend
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: infra/Dockerfile.backend
+          push: true
+          tags: |
+            ${{ env.DOCKER_BACKEND_IMAGE }}:latest
+            ${{ env.DOCKER_BACKEND_IMAGE }}:${{ github.sha }}
+          cache-from: type=registry,ref=${{ env.DOCKER_BACKEND_IMAGE }}:buildcache
+          cache-to: type=registry,ref=${{ env.DOCKER_BACKEND_IMAGE }}:buildcache,mode=max
+
+      - name: Build and push Frontend
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: infra/Dockerfile.frontend
+          push: true
+          tags: |
+            ${{ env.DOCKER_FRONTEND_IMAGE }}:latest
+            ${{ env.DOCKER_FRONTEND_IMAGE }}:${{ github.sha }}
+          cache-from: type=registry,ref=${{ env.DOCKER_FRONTEND_IMAGE }}:buildcache
+          cache-to: type=registry,ref=${{ env.DOCKER_FRONTEND_IMAGE }}:buildcache,mode=max
+
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v3
+
+      - name: Set up kubeconfig
+        run: |
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBE_CONFIG }}" > $HOME/.kube/config
+          chmod 600 $HOME/.kube/config
+
+      - name: Update Kubernetes manifests
+        run: |
+          cd infra/k8s
+          kustomize edit set image marketing-saas/backend=${{ env.DOCKER_BACKEND_IMAGE }}:${{ github.sha }}
+          kustomize edit set image marketing-saas/frontend=${{ env.DOCKER_FRONTEND_IMAGE }}:${{ github.sha }}
+
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl apply -k infra/k8s/
+          kubectl rollout status deployment/backend
+          kubectl rollout status deployment/frontend
