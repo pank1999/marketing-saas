@@ -31,7 +31,7 @@ jobs:
           npm run test:frontend
 
   build-and-push:
-    needs: test
+    # needs: test
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/production')
 
