@@ -1,18 +1,9 @@
 import { Request, Response } from 'express';
 import { AuthController } from '../auth.controller';
-import { prisma } from '@libs/prisma';
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
+import * as bcrypt from 'bcryptjs';
+import * as jwt from 'jsonwebtoken';
 
-jest.mock('@libs/prisma', () => ({
-  prisma: {
-    user: {
-      create: jest.fn(),
-      findUnique: jest.fn(),
-    },
-  },
-}));
-
+// Mock modules
 jest.mock('bcryptjs', () => ({
   hash: jest.fn(),
   compare: jest.fn(),
@@ -20,6 +11,18 @@ jest.mock('bcryptjs', () => ({
 
 jest.mock('jsonwebtoken', () => ({
   sign: jest.fn(),
+}));
+
+const mockedPrisma = {
+  user: {
+    create: jest.fn(),
+    findUnique: jest.fn(),
+  },
+};
+
+jest.doMock('@libs/prisma', () => ({
+  __esModule: true,
+  default: mockedPrisma,
 }));
 
 describe('AuthController', () => {
@@ -36,14 +39,25 @@ describe('AuthController', () => {
       json: jest.fn(),
     };
     authController = new AuthController();
+    jest.clearAllMocks();
   });
 
   describe('signup', () => {
     it('should create a new user and return success response', async () => {
       const mockUser = {
+        id: 1,
         email: 'test@example.com',
-        password: 'hashedPassword123',
         name: 'Test User',
+        password: 'hashedPassword123',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      const mockUserResponse = {
+        id: mockUser.id,
+        email: mockUser.email,
+        name: mockUser.name,
+        createdAt: mockUser.createdAt,
       };
 
       mockRequest.body = {
@@ -53,7 +67,7 @@ describe('AuthController', () => {
       };
 
       (bcrypt.hash as jest.Mock).mockResolvedValue('hashedPassword123');
-      (prisma.user.create as jest.Mock).mockResolvedValue(mockUser);
+      mockedPrisma.user.create.mockResolvedValue(mockUser);
 
       await authController.signup(
         mockRequest as Request,
@@ -61,17 +75,23 @@ describe('AuthController', () => {
       );
 
       expect(bcrypt.hash).toHaveBeenCalledWith('password123', 10);
-      expect(prisma.user.create).toHaveBeenCalledWith({
+      expect(mockedPrisma.user.create).toHaveBeenCalledWith({
         data: {
           email: 'test@example.com',
           password: 'hashedPassword123',
           name: 'Test User',
         },
+        select: {
+          id: true,
+          email: true,
+          name: true,
+          createdAt: true,
+        },
       });
       expect(mockResponse.status).toHaveBeenCalledWith(201);
       expect(mockResponse.json).toHaveBeenCalledWith({
         message: 'User created successfully',
-        user: mockUser,
+        user: mockUserResponse,
       });
     });
 
@@ -82,7 +102,7 @@ describe('AuthController', () => {
         name: 'Test User',
       };
 
-      (prisma.user.create as jest.Mock).mockRejectedValue(
+      mockedPrisma.user.create.mockRejectedValue(
         new Error('Unique constraint failed on the fields: (`email`)')
       );
 
@@ -104,6 +124,9 @@ describe('AuthController', () => {
         id: 1,
         email: 'test@example.com',
         password: 'hashedPassword123',
+        name: 'Test User',
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
       mockRequest.body = {
@@ -111,7 +134,7 @@ describe('AuthController', () => {
         password: 'password123',
       };
 
-      (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
+      mockedPrisma.user.findUnique.mockResolvedValue(mockUser);
       (bcrypt.compare as jest.Mock).mockResolvedValue(true);
       (jwt.sign as jest.Mock).mockReturnValue('mockToken123');
 
@@ -120,21 +143,28 @@ describe('AuthController', () => {
         mockResponse as Response
       );
 
-      expect(prisma.user.findUnique).toHaveBeenCalledWith({
+      expect(mockedPrisma.user.findUnique).toHaveBeenCalledWith({
         where: { email: 'test@example.com' },
       });
+
       expect(bcrypt.compare).toHaveBeenCalledWith(
         'password123',
         'hashedPassword123'
       );
       expect(jwt.sign).toHaveBeenCalledWith(
         { userId: mockUser.id },
-        process.env.JWT_SECRET,
+        process.env['JWT_SECRET'] || 'your-secret-key',
         { expiresIn: '24h' }
       );
       expect(mockResponse.json).toHaveBeenCalledWith({
         token: 'mockToken123',
-        user: mockUser,
+        user: {
+          id: mockUser.id,
+          email: mockUser.email,
+          name: mockUser.name,
+          createdAt: mockUser.createdAt,
+          updatedAt: mockUser.updatedAt,
+        },
       });
     });
 
@@ -144,7 +174,7 @@ describe('AuthController', () => {
         password: 'wrongpassword',
       };
 
-      (prisma.user.findUnique as jest.Mock).mockResolvedValue(null);
+      mockedPrisma.user.findUnique.mockResolvedValue(null);
 
       await authController.login(
         mockRequest as Request,

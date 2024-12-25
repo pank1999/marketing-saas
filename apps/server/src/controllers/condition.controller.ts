@@ -1,133 +1,127 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import prisma from '@libs/prisma';
-import { AuthRequest } from '../middleware/auth.middleware';
+import { ConditionType } from '@prisma/client';
+import { AuthenticatedRequest } from '../types/auth';
 
-export const createCondition = async (req: AuthRequest, res: Response) => {
-  try {
-    const { projectId, type, value, variation } = req.body;
-    const userId = req.user?.id;
+export class ConditionController {
+  async createCondition(req: AuthenticatedRequest, res: Response) {
+    try {
+      const { type, value, variation, projectId } = req.body;
+      const userId = req.user.id;
 
-    // Verify project ownership
-    const project = await prisma.project.findFirst({
-      where: {
-        id: Number(projectId),
-        userId,
-      },
-    });
+      const project = await prisma.project.findUnique({
+        where: { id: projectId },
+      });
 
-    if (!project) {
-      return res.status(404).json({ message: 'Project not found' });
-    }
+      if (!project) {
+        return res.status(404).json({ message: 'Project not found' });
+      }
 
-    const condition = await prisma.condition.create({
-      data: {
-        type,
-        value,
-        variation,
-        projectId: Number(projectId),
-      },
-    });
+      if (project.userId !== userId) {
+        return res.status(403).json({ message: 'Not authorized' });
+      }
 
-    res.status(201).json(condition);
-  } catch (error) {
-    console.error('Create condition error:', error);
-    res.status(500).json({ message: 'Error creating condition' });
-  }
-};
-
-export const getProjectConditions = async (req: AuthRequest, res: Response) => {
-  try {
-    const { projectId } = req.params;
-    const userId = req.user?.id;
-
-    // Verify project ownership
-    const project = await prisma.project.findFirst({
-      where: {
-        id: Number(projectId),
-        userId,
-      },
-      include: {
-        conditions: true,
-      },
-    });
-
-    if (!project) {
-      return res.status(404).json({ message: 'Project not found' });
-    }
-
-    res.json(project.conditions);
-  } catch (error) {
-    console.error('Get conditions error:', error);
-    res.status(500).json({ message: 'Error fetching conditions' });
-  }
-};
-
-export const updateCondition = async (req: AuthRequest, res: Response) => {
-  try {
-    const { id } = req.params;
-    const { type, value, variation } = req.body;
-    const userId = req.user?.id;
-
-    // Verify condition ownership through project
-    const condition = await prisma.condition.findFirst({
-      where: {
-        id: Number(id),
-        project: {
-          userId,
+      const condition = await prisma.condition.create({
+        data: {
+          type: type as ConditionType,
+          value,
+          variation,
+          projectId,
         },
-      },
-    });
+      });
 
-    if (!condition) {
-      return res.status(404).json({ message: 'Condition not found' });
+      res.status(201).json(condition);
+    } catch (error) {
+      res.status(500).json({ message: 'Error creating condition' });
     }
-
-    const updatedCondition = await prisma.condition.update({
-      where: {
-        id: Number(id),
-      },
-      data: {
-        type,
-        value,
-        variation,
-      },
-    });
-
-    res.json(updatedCondition);
-  } catch (error) {
-    console.error('Update condition error:', error);
-    res.status(500).json({ message: 'Error updating condition' });
   }
-};
 
-export const deleteCondition = async (req: AuthRequest, res: Response) => {
-  try {
-    const { id } = req.params;
-    const userId = req.user?.id;
+  async getProjectConditions(req: AuthenticatedRequest, res: Response) {
+    try {
+      const { projectId } = req.params;
+      const userId = req.user.id;
 
-    // Verify condition ownership through project
-    const condition = await prisma.condition.findFirst({
-      where: {
-        id: Number(id),
-        project: {
-          userId,
+      const project = await prisma.project.findUnique({
+        where: { id: parseInt(projectId) },
+      });
+
+      if (!project) {
+        return res.status(404).json({ message: 'Project not found' });
+      }
+
+      if (project.userId !== userId) {
+        return res.status(403).json({ message: 'Not authorized' });
+      }
+
+      const conditions = await prisma.condition.findMany({
+        where: { projectId: parseInt(projectId) },
+      });
+
+      res.json(conditions);
+    } catch (error) {
+      res.status(500).json({ message: 'Error fetching conditions' });
+    }
+  }
+
+  async updateCondition(req: AuthenticatedRequest, res: Response) {
+    try {
+      const { id } = req.params;
+      const { type, value, variation } = req.body;
+      const userId = req.user.id;
+
+      const condition = await prisma.condition.findUnique({
+        where: { id: parseInt(id) },
+        include: { project: true },
+      });
+
+      if (!condition) {
+        return res.status(404).json({ message: 'Condition not found' });
+      }
+
+      if (condition.project.userId !== userId) {
+        return res.status(403).json({ message: 'Not authorized' });
+      }
+
+      const updatedCondition = await prisma.condition.update({
+        where: { id: parseInt(id) },
+        data: {
+          type: type as ConditionType,
+          value,
+          variation,
         },
-      },
-    });
+      });
 
-    if (!condition) {
-      return res.status(404).json({ message: 'Condition not found' });
+      res.json(updatedCondition);
+    } catch (error) {
+      res.status(500).json({ message: 'Error updating condition' });
     }
-
-    await prisma.condition.delete({
-      where: {
-        id: Number(id),
-      },
-    });
-
-    res.status(204).send();
-  } catch (error) {
-    console.error('Delete condition error:', error);
-    res.status(500).json({ message: 'Error deleting condition' });
   }
-};
+
+  async deleteCondition(req: AuthenticatedRequest, res: Response) {
+    try {
+      const { id } = req.params;
+      const userId = req.user.id;
+
+      const condition = await prisma.condition.findUnique({
+        where: { id: parseInt(id) },
+        include: { project: true },
+      });
+
+      if (!condition) {
+        return res.status(404).json({ message: 'Condition not found' });
+      }
+
+      if (condition.project.userId !== userId) {
+        return res.status(403).json({ message: 'Not authorized' });
+      }
+
+      await prisma.condition.delete({
+        where: { id: parseInt(id) },
+      });
+
+      res.status(200).json({ message: 'Condition deleted successfully' });
+    } catch (error) {
+      res.status(500).json({ message: 'Error deleting condition' });
+    }
+  }
+}

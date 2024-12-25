@@ -1,13 +1,18 @@
 import { Router } from 'express';
-import { login, signup } from '../controllers/auth.controller';
+import { AuthController } from '../controllers/auth.controller';
 import {
-  validateLogin,
   validateSignup,
+  validateLogin,
 } from '../middleware/validation.middleware';
 
 const router = Router();
+const authController = new AuthController();
 
-router.post('/signup', validateSignup, signup);
-router.post('/login', validateLogin, login);
+router.post(
+  '/signup',
+  validateSignup,
+  authController.signup.bind(authController)
+);
+router.post('/login', validateLogin, authController.login.bind(authController));
 
 export default router;

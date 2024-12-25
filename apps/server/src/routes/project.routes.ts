@@ -1,31 +1,25 @@
 import { Router } from 'express';
-import {
-  createProject,
-  getUserProjects,
-  getProjectById,
-  updateProject,
-  deleteProject,
-} from '../controllers/project.controller';
+import { ProjectController } from '../controllers/project.controller';
 import { authMiddleware } from '../middleware/auth.middleware';
+import { validateProject } from '../middleware/validation.middleware';
 
 const router = Router();
+const projectController = new ProjectController();
 
-// All routes require authentication
 router.use(authMiddleware);
 
-// Create a new project
-router.post('/', createProject);
-
-// Get all projects for the authenticated user
-router.get('/', getUserProjects);
-
-// Get a specific project by ID
-router.get('/:id', getProjectById);
-
-// Update a project
-router.put('/:id', updateProject);
-
-// Delete a project
-router.delete('/:id', deleteProject);
+router.post(
+  '/',
+  validateProject,
+  projectController.createProject.bind(projectController)
+);
+router.get('/', projectController.getProjects.bind(projectController));
+router.get('/:id', projectController.getProject.bind(projectController));
+router.put(
+  '/:id',
+  validateProject,
+  projectController.updateProject.bind(projectController)
+);
+router.delete('/:id', projectController.deleteProject.bind(projectController));
 
 export default router;

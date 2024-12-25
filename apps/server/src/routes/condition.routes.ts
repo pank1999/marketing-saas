@@ -1,27 +1,30 @@
 import { Router } from 'express';
-import {
-  createCondition,
-  getProjectConditions,
-  updateCondition,
-  deleteCondition,
-} from '../controllers/condition.controller';
+import { ConditionController } from '../controllers/condition.controller';
 import { authMiddleware } from '../middleware/auth.middleware';
+import { validateCondition } from '../middleware/validation.middleware';
 
 const router = Router();
+const conditionController = new ConditionController();
 
-// All routes require authentication
 router.use(authMiddleware);
 
-// Create a new condition
-router.post('/', createCondition);
-
-// Get all conditions for a project
-router.get('/project/:projectId', getProjectConditions);
-
-// Update a condition
-router.put('/:id', updateCondition);
-
-// Delete a condition
-router.delete('/:id', deleteCondition);
+router.post(
+  '/',
+  validateCondition,
+  conditionController.createCondition.bind(conditionController)
+);
+router.get(
+  '/project/:projectId',
+  conditionController.getProjectConditions.bind(conditionController)
+);
+router.put(
+  '/:id',
+  validateCondition,
+  conditionController.updateCondition.bind(conditionController)
+);
+router.delete(
+  '/:id',
+  conditionController.deleteCondition.bind(conditionController)
+);
 
 export default router;

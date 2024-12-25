@@ -1,131 +1,121 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import prisma from '@libs/prisma';
-import { AuthRequest } from '../middleware/auth.middleware';
+import { AuthenticatedRequest } from '../types/auth';
 
-export const createProject = async (req: AuthRequest, res: Response) => {
-  try {
-    const { name, description } = req.body;
-    const userId = req.user?.id;
+export class ProjectController {
+  async createProject(req: AuthenticatedRequest, res: Response) {
+    try {
+      const { name, description } = req.body;
+      const userId = req.user.id;
 
-    const project = await prisma.project.create({
-      data: {
-        name,
-        description,
-        userId,
-      },
-    });
+      const project = await prisma.project.create({
+        data: {
+          name,
+          description,
+          userId,
+        },
+      });
 
-    res.status(201).json(project);
-  } catch (error) {
-    console.error('Create project error:', error);
-    res.status(500).json({ message: 'Error creating project' });
-  }
-};
-
-export const getUserProjects = async (req: AuthRequest, res: Response) => {
-  try {
-    const userId = req.user?.id;
-
-    const projects = await prisma.project.findMany({
-      where: {
-        userId,
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-    });
-
-    res.json(projects);
-  } catch (error) {
-    console.error('Get projects error:', error);
-    res.status(500).json({ message: 'Error fetching projects' });
-  }
-};
-
-export const getProjectById = async (req: AuthRequest, res: Response) => {
-  try {
-    const { id } = req.params;
-    const userId = req.user?.id;
-
-    const project = await prisma.project.findFirst({
-      where: {
-        id: Number(id),
-        userId,
-      },
-    });
-
-    if (!project) {
-      return res.status(404).json({ message: 'Project not found' });
+      res.status(201).json(project);
+    } catch (error) {
+      res.status(500).json({ message: 'Error creating project' });
     }
-
-    res.json(project);
-  } catch (error) {
-    console.error('Get project error:', error);
-    res.status(500).json({ message: 'Error fetching project' });
   }
-};
 
-export const updateProject = async (req: AuthRequest, res: Response) => {
-  try {
-    const { id } = req.params;
-    const { name, description } = req.body;
-    const userId = req.user?.id;
+  async getProjects(req: AuthenticatedRequest, res: Response) {
+    try {
+      const userId = req.user.id;
 
-    // First check if project exists and belongs to user
-    const existingProject = await prisma.project.findFirst({
-      where: {
-        id: Number(id),
-        userId,
-      },
-    });
+      const projects = await prisma.project.findMany({
+        where: { userId },
+        orderBy: { createdAt: 'desc' },
+      });
 
-    if (!existingProject) {
-      return res.status(404).json({ message: 'Project not found' });
+      res.json(projects);
+    } catch (error) {
+      res.status(500).json({ message: 'Error fetching projects' });
     }
-
-    const updatedProject = await prisma.project.update({
-      where: {
-        id: Number(id),
-      },
-      data: {
-        name,
-        description,
-      },
-    });
-
-    res.json(updatedProject);
-  } catch (error) {
-    console.error('Update project error:', error);
-    res.status(500).json({ message: 'Error updating project' });
   }
-};
 
-export const deleteProject = async (req: AuthRequest, res: Response) => {
-  try {
-    const { id } = req.params;
-    const userId = req.user?.id;
+  async getProject(req: AuthenticatedRequest, res: Response) {
+    try {
+      const { id } = req.params;
+      const userId = req.user.id;
 
-    // First check if project exists and belongs to user
-    const existingProject = await prisma.project.findFirst({
-      where: {
-        id: Number(id),
-        userId,
-      },
-    });
+      const project = await prisma.project.findUnique({
+        where: { id: parseInt(id) },
+      });
 
-    if (!existingProject) {
-      return res.status(404).json({ message: 'Project not found' });
+      if (!project) {
+        return res.status(404).json({ message: 'Project not found' });
+      }
+
+      if (project.userId !== userId) {
+        return res.status(403).json({ message: 'Not authorized' });
+      }
+
+      res.json(project);
+    } catch (error) {
+      res.status(500).json({ message: 'Error fetching project' });
     }
-
-    await prisma.project.delete({
-      where: {
-        id: Number(id),
-      },
-    });
-
-    res.status(204).send();
-  } catch (error) {
-    console.error('Delete project error:', error);
-    res.status(500).json({ message: 'Error deleting project' });
   }
-};
+
+  async updateProject(req: AuthenticatedRequest, res: Response) {
+    try {
+      const { id } = req.params;
+      const { name, description } = req.body;
+      const userId = req.user.id;
+
+      const project = await prisma.project.findUnique({
+        where: { id: parseInt(id) },
+      });
+
+      if (!project) {
+        return res.status(404).json({ message: 'Project not found' });
+      }
+
+      if (project.userId !== userId) {
+        return res.status(403).json({ message: 'Not authorized' });
+      }
+
+      const updatedProject = await prisma.project.update({
+        where: { id: parseInt(id) },
+        data: {
+          name,
+          description,
+        },
+      });
+
+      res.json(updatedProject);
+    } catch (error) {
+      res.status(500).json({ message: 'Error updating project' });
+    }
+  }
+
+  async deleteProject(req: AuthenticatedRequest, res: Response) {
+    try {
+      const { id } = req.params;
+      const userId = req.user.id;
+
+      const project = await prisma.project.findUnique({
+        where: { id: parseInt(id) },
+      });
+
+      if (!project) {
+        return res.status(404).json({ message: 'Project not found' });
+      }
+
+      if (project.userId !== userId) {
+        return res.status(403).json({ message: 'Not authorized' });
+      }
+
+      await prisma.project.delete({
+        where: { id: parseInt(id) },
+      });
+
+      res.status(200).json({ message: 'Project deleted successfully' });
+    } catch (error) {
+      res.status(500).json({ message: 'Error deleting project' });
+    }
+  }
+}
