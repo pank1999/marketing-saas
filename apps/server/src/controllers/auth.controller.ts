@@ -77,7 +77,7 @@ export const login = async (req: Request, res: Response) => {
     const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, {
       expiresIn: JWT_EXPIRES_IN,
     });
-
+        token,
     // Return user data without password
     const { password: _, ...userWithoutPassword } = user;
 
