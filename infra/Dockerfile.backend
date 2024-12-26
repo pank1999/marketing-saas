@@ -16,6 +16,9 @@ COPY libs ./libs
 # Install dependencies
 RUN npm ci --legacy-peer-deps
 
+# Generate Prisma Client
+RUN npx prisma generate --schema=./libs/prisma/schema.prisma
+
 RUN npx nx reset
 
 # Build the application
