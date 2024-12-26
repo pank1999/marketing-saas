@@ -7,6 +7,8 @@ WORKDIR /app
 COPY package*.json ./
 COPY nx.json ./
 COPY tsconfig*.json ./
+COPY jest.preset.js ./
+COPY eslint.config.cjs ./
 
 # Copy source code
 COPY apps/frontend ./apps/frontend
@@ -15,8 +17,10 @@ COPY libs ./libs
 # Install dependencies
 RUN npm ci --legacy-peer-deps
 
+RUN npx nx reset
+
 # Build the application
-RUN npx nx build frontend
+RUN export NX_DAEMON=false && npx nx build frontend --verbose
 
 # Production stage
 FROM node:18-alpine
@@ -24,7 +28,6 @@ FROM node:18-alpine
 WORKDIR /app
 
 # Copy built assets
-COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
 
