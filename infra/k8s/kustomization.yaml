@@ -3,9 +3,9 @@ kind: Kustomization
 
 resources:
   # Database
-  - database/postgres-secret.yaml
-  - database/postgres-deployment.yaml
-  - database/postgres-service.yaml
+  - ../initial-setup/database/postgres-secret.yaml
+  - ../initial-setup/database/postgres-deployment.yaml
+  - ../initial-setup/database/postgres-service.yaml
 
   # Backend
   - backend/backend-config.yaml

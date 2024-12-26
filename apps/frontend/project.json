@@ -13,9 +13,11 @@
       },
       "configurations": {
         "development": {
-          "outputPath": "apps/frontend"
+          "outputPath": "dist/apps/frontend"
         },
-        "production": {}
+        "production": {
+          "outputPath": "dist/apps/frontend"
+        }
       }
     },
     "serve": {
