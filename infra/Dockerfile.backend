@@ -18,7 +18,7 @@ RUN npm ci --legacy-peer-deps
 RUN npx nx reset
 
 # Build the application
-RUN npx nx build server
+RUN NX_DAEMON=false && npx nx build server --verbose
 
 # Production stage
 FROM node:18-alpine
