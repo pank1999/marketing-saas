@@ -9,7 +9,7 @@ spec:
   tls:
     - hosts:
         - marketing-saas.com
-      secretName: marketing-saas-tls
+      secretName: letsencrypt-prod
   rules:
     - host: marketing-saas.com
       http:
