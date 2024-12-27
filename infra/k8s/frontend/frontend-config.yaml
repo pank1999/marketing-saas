@@ -4,5 +4,5 @@ metadata:
   name: frontend-config
 data:
   NODE_ENV: 'production'
-  NEXT_PUBLIC_API_URL: 'https://marketing-saas.com/api'
-  NEXT_PUBLIC_APP_URL: 'https://marketing-saas.com'
+  NEXT_PUBLIC_API_URL: 'https://marketing-saas.pankajpandey.dev/api'
+  NEXT_PUBLIC_APP_URL: 'https://marketing-saas.pankajpandey.dev'

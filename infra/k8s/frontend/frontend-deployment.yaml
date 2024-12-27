@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: frontend
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: frontend
@@ -17,7 +17,7 @@ spec:
           image: pank1999/marketing-saas-frontend:latest
           imagePullPolicy: Always
           ports:
-            - containerPort: 3000
+            - containerPort: 4000
           envFrom:
             - configMapRef:
                 name: frontend-config
@@ -31,12 +31,12 @@ spec:
           readinessProbe:
             httpGet:
               path: /
-              port: 3000
+              port: 4000
             initialDelaySeconds: 5
             periodSeconds: 10
           livenessProbe:
             httpGet:
               path: /
-              port: 3000
+              port: 4000
             initialDelaySeconds: 15
             periodSeconds: 20

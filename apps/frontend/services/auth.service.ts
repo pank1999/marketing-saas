@@ -4,7 +4,9 @@ import {
   SignupCredentials,
 } from '../types/auth';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
+const API_URL =
+  process.env.NEXT_PUBLIC_API_URL ||
+  'https://marketing-saas.pankajpandey.dev/api';
 
 class AuthService {
   private token: string | null = null;

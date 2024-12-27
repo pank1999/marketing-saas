@@ -6,4 +6,4 @@ data:
   NODE_ENV: 'production'
   PORT: '3000'
   DATABASE_URL: 'postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@postgres:5432/$(POSTGRES_DB)'
-  CORS_ORIGIN: 'https://marketing-saas.com'
+  CORS_ORIGIN: 'https://marketing-saas.pankajpandey.dev'

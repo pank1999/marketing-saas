@@ -8,10 +8,10 @@ metadata:
 spec:
   tls:
     - hosts:
-        - marketing-saas.com
+        - marketing-saas.pankajpandey.dev
       secretName: letsencrypt-prod
   rules:
-    - host: marketing-saas.com
+    - host: marketing-saas.pankajpandey.dev
       http:
         paths:
           - path: /
