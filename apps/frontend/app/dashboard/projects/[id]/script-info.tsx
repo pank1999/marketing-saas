@@ -32,7 +32,7 @@ export default function ScriptInfo({ projectId }: ScriptInfoProps) {
   const fetchScriptInfo = async () => {
     try {
       const token = authService.getToken();
-      const response = await fetch(`${API_URL}/scripts/${projectId}/info`, {
+      const response = await fetch(`${API_URL}/scripts/info/${projectId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -142,11 +142,11 @@ export default function ScriptInfo({ projectId }: ScriptInfoProps) {
               Add Domain
             </button>
           </div>
-          {scriptInfo.allowedUrls.length === 0 ? (
+          {scriptInfo?.allowedUrls?.length === 0 ? (
             <p className="text-gray-500">No domains added yet. Add domains where this script can run.</p>
           ) : (
             <ul className="space-y-2">
-              {scriptInfo.allowedUrls.map((url) => (
+              {scriptInfo.allowedUrls && scriptInfo.allowedUrls.map((url) => (
                 <li key={url} className="flex justify-between items-center p-2 bg-gray-50 rounded">
                   <code className="text-sm">{url}</code>
                   <button
@@ -189,13 +189,6 @@ export default function ScriptInfo({ projectId }: ScriptInfoProps) {
               {copied === 'code' ? 'Copied!' : 'Copy Code'}
             </button>
           </div>
-        </div>
-
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-          <h3 className="text-lg font-medium mb-4">Instructions</h3>
-          <pre className="whitespace-pre-wrap text-sm text-gray-600">
-            {scriptInfo.instructions}
-          </pre>
         </div>
 
         <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">

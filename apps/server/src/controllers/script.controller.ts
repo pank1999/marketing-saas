@@ -60,7 +60,7 @@ export class ScriptController {
         return res.status(403).json({ message: 'Not authorized' });
       }
 
-      const scriptUrl = `/api/scripts/${project.id}`;
+      const scriptUrl = `https://marketing-saas.pankajpandey.dev/api/scripts/${project.id}`;
       const embedCode = `<script src="${scriptUrl}"></script>`;
 
       res.json({
