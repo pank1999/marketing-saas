@@ -16,7 +16,6 @@ export class AuthController {
       if (existingUser) {
         return res.status(400).json({ message: 'Email already exists' });
       }
-
       // Hash password
       const hashedPassword = await bcrypt.hash(password, 10);
 

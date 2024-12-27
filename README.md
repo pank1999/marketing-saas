@@ -171,6 +171,11 @@ npx nx lint frontend    # Lint frontend code
 npx nx lint server     # Lint backend code
 ```
 
+## Future Improvements:
+
+- Use cronjob instead of fetching the weather or processing any other condition on every request.
+- Improve the ux
+
 ## Contributing
 
 1. Fork the repository
