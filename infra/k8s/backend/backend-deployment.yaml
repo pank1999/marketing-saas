@@ -25,26 +25,24 @@ spec:
                 name: backend-secret
           resources:
             requests:
-              cpu: '200m'
               memory: '256Mi'
+              cpu: '100m'
             limits:
-              cpu: '1000m'
-              memory: '1Gi'
+              memory: '512Mi'
+              cpu: '200m'
           readinessProbe:
             httpGet:
-              path: /api
+              path: /api/health
               port: 3000
             initialDelaySeconds: 5
             periodSeconds: 10
             timeoutSeconds: 5
-            failureThreshold: 3
           livenessProbe:
             httpGet:
-              path: /api
+              path: /api/health
               port: 3000
             initialDelaySeconds: 15
             periodSeconds: 20
             timeoutSeconds: 5
-            failureThreshold: 3
       imagePullSecrets:
         - name: my-docker-secret

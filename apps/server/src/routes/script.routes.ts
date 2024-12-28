@@ -7,11 +7,7 @@ const scriptController = new ScriptController();
 
 router.use(authMiddleware);
 
-router.get('/scripts/:projectId', scriptController.serveProjectScript);
-router.get(
-  '/scripts/:projectId/info',
-  authMiddleware,
-  scriptController.getScriptInfo
-);
+router.get('/:projectId', scriptController.serveProjectScript);
+router.get('/:projectId/info', authMiddleware, scriptController.getScriptInfo);
 
 export default router;

@@ -118,4 +118,24 @@ export class ProjectController {
       res.status(500).json({ message: 'Error deleting project' });
     }
   }
+
+  // HANDLE ALLOWED URLS
+  async updateAllowedUrls(req: AuthenticatedRequest, res: Response) {
+    const { id } = req.params;
+    const { allowedUrls } = req.body;
+    const project = await prisma.project.findUnique({
+      where: { id: parseInt(id) },
+    });
+    if (!project) {
+      return res.status(404).json({ message: 'Project not found' });
+    }
+
+    const updatedProject = await prisma.project.update({
+      where: { id: parseInt(id) },
+      data: { allowedUrls },
+    });
+    console.log('updatedProject', updatedProject);
+
+    res.json(updatedProject);
+  }
 }

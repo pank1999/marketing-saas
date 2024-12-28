@@ -14,7 +14,12 @@ const app = express();
 dotenv.config();
 
 // Middleware
-app.use(cors());
+app.use(
+  cors({
+    origin: process.env['CORS_ORIGIN'] || '*',
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.use(cookieParser());
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
@@ -30,8 +35,21 @@ app.get('/api', (req, res) => {
   res.send({ message: 'Welcome to server!' });
 });
 
+// Create health check endpoint
+app.get('/api/health', (req, res) => {
+  res.json({
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+  });
+});
+
 const port = process.env['PORT'] || 3000;
 const server = app.listen(port, () => {
   console.log(`Listening at http://localhost:${port}/api`);
 });
+
+// Configure server timeouts
+server.timeout = 30000; // 30 seconds
+server.keepAliveTimeout = 65000; // Recommended to be higher than timeout
+
 server.on('error', console.error);

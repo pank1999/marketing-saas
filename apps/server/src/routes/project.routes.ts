@@ -21,5 +21,9 @@ router.put(
   projectController.updateProject.bind(projectController)
 );
 router.delete('/:id', projectController.deleteProject.bind(projectController));
+router.put(
+  '/:id/allowed-urls',
+  projectController.updateAllowedUrls.bind(projectController)
+);
 
 export default router;

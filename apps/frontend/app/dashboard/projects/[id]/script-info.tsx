@@ -32,7 +32,7 @@ export default function ScriptInfo({ projectId }: ScriptInfoProps) {
   const fetchScriptInfo = async () => {
     try {
       const token = authService.getToken();
-      const response = await fetch(`${API_URL}/scripts/info/${projectId}`, {
+      const response = await fetch(`${API_URL}/scripts/${projectId}/info`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -70,16 +70,18 @@ export default function ScriptInfo({ projectId }: ScriptInfoProps) {
 
     try {
       const token = authService.getToken();
-      const response = await fetch(`${API_URL}/scripts/${projectId}/allowed-urls`, {
+      console.log('token', token);
+      const response = await fetch(`${API_URL}/projects/${projectId}/allowed-urls`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          allowedUrls: [...scriptInfo.allowedUrls, newUrl],
+          allowedUrls: scriptInfo.allowedUrls ? [...scriptInfo.allowedUrls, newUrl] : [newUrl],
         }),
       });
+      console.log('response', response);
 
       if (!response.ok) throw new Error('Failed to update allowed URLs');
       
@@ -91,6 +93,7 @@ export default function ScriptInfo({ projectId }: ScriptInfoProps) {
       setNewUrl('');
       setShowUrlModal(false);
     } catch (err) {
+      console.log(err)
       setError('Failed to update allowed URLs');
     }
   };
@@ -100,7 +103,7 @@ export default function ScriptInfo({ projectId }: ScriptInfoProps) {
 
     try {
       const token = authService.getToken();
-      const response = await fetch(`${API_URL}/scripts/${projectId}/allowed-urls`, {
+      const response = await fetch(`${API_URL}/projects/${projectId}/allowed-urls`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

@@ -5,5 +5,5 @@ metadata:
 data:
   NODE_ENV: 'production'
   PORT: '3000'
-  DATABASE_URL: 'postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@postgres:5432/$(POSTGRES_DB)'
-  CORS_ORIGIN: 'https://marketing-saas.pankajpandey.dev'
+  DATABASE_URL: 'postgresql://marketing_saas:super_secret_password@postgres:5432/marketing_saas'
+  CORS_ORIGIN: 'https://marketing-saas.pankajpandey.dev' # ... rest of your ingress configuration
