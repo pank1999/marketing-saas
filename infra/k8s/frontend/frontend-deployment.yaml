@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: pank1999/marketing-saas-frontend:latest
+          image: pank1999/marketing-saas-frontend
           imagePullPolicy: Always
           ports:
             - containerPort: 4000

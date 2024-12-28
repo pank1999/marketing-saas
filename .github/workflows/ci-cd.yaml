@@ -92,8 +92,8 @@ jobs:
       - name: Update Kubernetes manifests
         run: |
           cd infra/k8s
-          kustomize edit set image marketing-saas/backend=${{ env.DOCKER_BACKEND_IMAGE }}:${{ github.sha }}
-          kustomize edit set image marketing-saas/frontend=${{ env.DOCKER_FRONTEND_IMAGE }}:${{ github.sha }}
+          kustomize edit set image pank1999/marketing-saas-backend=${{ env.DOCKER_BACKEND_IMAGE }}:${{ github.sha }}
+          kustomize edit set image pank1999/marketing-saas-frontend=${{ env.DOCKER_FRONTEND_IMAGE }}:${{ github.sha }}
 
       - name: Deploy to DigitalOcean Kubernetes
         run: |

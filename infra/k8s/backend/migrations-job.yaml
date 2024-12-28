@@ -8,7 +8,7 @@ spec:
     spec:
       containers:
         - name: migrations
-          image: pank1999/marketing-saas-backend:latest
+          image: pank1999/marketing-saas-backend:7783b6c6ae4b533a72e55038b55900a0357dbdca
           command: ['npx', 'prisma', 'migrate', 'deploy']
           envFrom:
             - configMapRef:
@@ -16,3 +16,5 @@ spec:
             - secretRef:
                 name: backend-secret
       restartPolicy: Never
+      imagePullSecrets:
+        - name: my-docker-secret

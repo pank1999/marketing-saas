@@ -19,13 +19,14 @@ export default function SignupPage() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+    if (name === 'confirmPassword') {
+      setConfirmPassword(value); // Update confirm password state
+      return;
+    }
     setFormData(prev => ({
       ...prev,
       [name]: value,
     }));
-    if (name === 'confirmPassword') {
-      setConfirmPassword(value); // Update confirm password state
-    }
   };
 
   useEffect(() => {
