@@ -29,9 +29,11 @@ FROM node:18-alpine
 
 WORKDIR /app
 
-# Copy built assets
+# Copy built assets and Prisma files
 COPY --from=builder /app/dist/apps/server ./
 COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/libs/prisma/schema.prisma ./schema.prisma
+COPY --from=builder /app/libs/prisma/migrations ./migrations
 
 # Set environment variables
 ENV NODE_ENV=production

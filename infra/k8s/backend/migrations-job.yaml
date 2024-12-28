@@ -1,0 +1,18 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: database-migrations
+spec:
+  ttlSecondsAfterFinished: 100
+  template:
+    spec:
+      containers:
+        - name: migrations
+          image: pank1999/marketing-saas-backend:latest
+          command: ['npx', 'prisma', 'migrate', 'deploy']
+          envFrom:
+            - configMapRef:
+                name: backend-config
+            - secretRef:
+                name: backend-secret
+      restartPolicy: Never
