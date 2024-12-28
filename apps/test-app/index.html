@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dynamic Colors</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        margin: 0;
+        padding: 20px;
+        transition: background-color 0.3s ease;
+      }
+
+      #dynamic-text {
+        font-size: 24px;
+        margin-bottom: 20px;
+        transition: color 0.3s ease;
+      }
+
+      button {
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        border-radius: 4px;
+      }
+
+      button:hover {
+        background-color: #45a049;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="dynamic-text">
+      This text and background will change color based on URL parameter
+    </div>
+    <button onclick="changeVariation()">Change Variation</button>
+
+    <script>
+      // Function to get URL parameters
+      function getUrlParameter(name) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(name);
+      }
+
+      // Function to update colors based on variation
+      function updateColors() {
+        const variation = getUrlParameter('variation');
+        const text = document.getElementById('dynamic-text');
+        const body = document.body;
+
+        switch (variation) {
+          case 'a':
+            text.style.color = '#FF0000'; // Red text
+            body.style.backgroundColor = '#FFE4E4'; // Light red background
+            break;
+          case 'b':
+            text.style.color = '#0000FF'; // Blue text
+            body.style.backgroundColor = '#E4E4FF'; // Light blue background
+            break;
+          case 'c':
+            text.style.color = '#008000'; // Green text
+            body.style.backgroundColor = '#E4FFE4'; // Light green background
+            break;
+          default:
+            text.style.color = '#000000'; // Black text
+            body.style.backgroundColor = '#FFFFFF'; // White background
+        }
+      }
+
+      // Function to change variation
+      function changeVariation() {
+        const currentVariation = getUrlParameter('variation') || '';
+        let nextVariation;
+
+        switch (currentVariation) {
+          case '':
+            nextVariation = 'a';
+            break;
+          case 'a':
+            nextVariation = 'b';
+            break;
+          case 'b':
+            nextVariation = 'c';
+            break;
+          default:
+            nextVariation = '';
+        }
+
+        // Update URL with new variation
+        const newUrl = new URL(window.location.href);
+        if (nextVariation) {
+          newUrl.searchParams.set('variation', nextVariation);
+        } else {
+          newUrl.searchParams.delete('variation');
+        }
+        window.history.pushState({}, '', newUrl);
+
+        // Update the colors
+        updateColors();
+      }
+
+      // Listen for URL changes
+      window.addEventListener('popstate', updateColors);
+
+      // Initial color update
+      updateColors();
+    </script>
+    <script src="http://localhost:3000/api/scripts/8?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjQsImlhdCI6MTczNTMyNTMxMywiZXhwIjoxNzM1NDExNzEzfQ.TZ3OavfIB2hAYXU_lxIcbwbTE8YjmsoGrssX4sy6bMo"></script>
+  </body>
+</html>

@@ -60,13 +60,12 @@ export class ScriptGenerator {
           
           const { latitude, longitude } = position.coords;
           const response = await fetch(
-            \`https://api.openweathermap.org/data/2.5/weather?lat=\${latitude}&lon=\${longitude}&appid=YOUR_API_KEY\`
+            \`/api/weather?lat=\${latitude}&lon=\${longitude}\`
           );
           
           if (!response.ok) return '';
           
-          const data = await response.json();
-          const weather = data.weather[0].main.toUpperCase();
+          const { weather } = await response.json();
           
           switch('${value}') {
             case 'SUNNY':
@@ -98,23 +97,22 @@ export class ScriptGenerator {
           
           const { latitude, longitude } = position.coords;
           const response = await fetch(
-            \`https://api.openweathermap.org/data/2.5/weather?lat=\${latitude}&lon=\${longitude}&appid=YOUR_API_KEY\`
+            \`/api/weather?lat=\${latitude}&lon=\${longitude}\`
           );
           
           if (!response.ok) return '';
           
-          const data = await response.json();
-          const tempC = data.main.temp - 273.15; // Convert Kelvin to Celsius
+          const { temperature } = await response.json();
           
           switch('${value}') {
             case 'BELOW_0C':
-              return tempC < 0 ? '${variation}' : '';
+              return temperature < 0 ? '${variation}' : '';
             case '0C_TO_15C':
-              return tempC >= 0 && tempC < 15 ? '${variation}' : '';
+              return temperature >= 0 && temperature < 15 ? '${variation}' : '';
             case '15C_TO_25C':
-              return tempC >= 15 && tempC < 25 ? '${variation}' : '';
+              return temperature >= 15 && temperature < 25 ? '${variation}' : '';
             case 'ABOVE_25C':
-              return tempC >= 25 ? '${variation}' : '';
+              return temperature >= 25 ? '${variation}' : '';
             default:
               return '';
           }

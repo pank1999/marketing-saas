@@ -1,4 +1,4 @@
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import prisma from '@libs/prisma';
 import { ScriptGenerator } from '../services/script-generator.service';
 import { AuthenticatedRequest } from '../types/auth';
@@ -10,10 +10,13 @@ export class ScriptController {
     this.scriptGenerator = new ScriptGenerator();
   }
 
-  async getProjectScript(req: AuthenticatedRequest, res: Response) {
+  // This will be a public route
+  async serveProjectScript(req: Request, res: Response) {
     try {
       const { projectId } = req.params;
-      const userId = req.user.id;
+
+      // Optional: Check the referer header to validate the request origin
+      const referer = req.headers.referer || req.headers.origin;
 
       const project = await prisma.project.findUnique({
         where: { id: parseInt(projectId) },
@@ -23,8 +26,15 @@ export class ScriptController {
         return res.status(404).json({ message: 'Project not found' });
       }
 
-      if (project.userId !== userId) {
-        return res.status(403).json({ message: 'Not authorized' });
+      // Validate if the request is coming from an allowed domain
+      if (project.allowedUrls && project.allowedUrls.length > 0) {
+        const isAllowedOrigin = project.allowedUrls.some(
+          (url) => referer && new URL(referer).origin.includes(url)
+        );
+
+        if (!isAllowedOrigin) {
+          return res.status(403).json({ message: 'Domain not allowed' });
+        }
       }
 
       const conditions = await prisma.condition.findMany({
@@ -36,6 +46,8 @@ export class ScriptController {
         project.allowedUrls
       );
 
+      // Set CORS headers to allow the script to be loaded from allowed domains
+      res.setHeader('Access-Control-Allow-Origin', '*');
       res.setHeader('Content-Type', 'application/javascript');
       res.send(script);
     } catch (error) {
@@ -43,6 +55,7 @@ export class ScriptController {
     }
   }
 
+  // This route remains authenticated
   async getScriptInfo(req: AuthenticatedRequest, res: Response) {
     try {
       const { projectId } = req.params;
@@ -60,7 +73,7 @@ export class ScriptController {
         return res.status(403).json({ message: 'Not authorized' });
       }
 
-      const scriptUrl = `https://marketing-saas.pankajpandey.dev/api/scripts/${project.id}`;
+      const scriptUrl = `${process.env['NEXT_PUBLIC_API_URL']}/api/scripts/${project.id}`;
       const embedCode = `<script src="${scriptUrl}"></script>`;
 
       res.json({
@@ -68,6 +81,7 @@ export class ScriptController {
         embedCode,
       });
     } catch (error) {
+      console.log(error);
       res.status(500).json({ message: 'Error fetching script info' });
     }
   }
