@@ -11,7 +11,7 @@ export class ScriptController {
   }
 
   // This will be a public route
-  async serveProjectScript(req: Request, res: Response) {
+  serveProjectScript = async (req: Request, res: Response) => {
     try {
       const { projectId } = req.params;
 
@@ -53,10 +53,10 @@ export class ScriptController {
     } catch (error) {
       res.status(500).json({ message: 'Error generating script' });
     }
-  }
+  };
 
   // This route remains authenticated
-  async getScriptInfo(req: AuthenticatedRequest, res: Response) {
+  getScriptInfo = async (req: AuthenticatedRequest, res: Response) => {
     try {
       const { projectId } = req.params;
       const userId = req.user.id;
@@ -73,7 +73,7 @@ export class ScriptController {
         return res.status(403).json({ message: 'Not authorized' });
       }
 
-      const scriptUrl = `${process.env['NEXT_PUBLIC_API_URL']}/api/scripts/${project.id}`;
+      const scriptUrl = `${process.env['NEXT_PUBLIC_API_URL']}/scripts/${project.id}`;
       const embedCode = `<script src="${scriptUrl}"></script>`;
 
       res.json({
@@ -84,5 +84,5 @@ export class ScriptController {
       console.log(error);
       res.status(500).json({ message: 'Error fetching script info' });
     }
-  }
+  };
 }

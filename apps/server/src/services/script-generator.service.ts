@@ -12,12 +12,11 @@ export class ScriptGenerator {
       function isUrlAllowed() {
         const currentHost = window.location.hostname;
         const allowedUrls = ${JSON.stringify(allowedUrls)};
-        
         return allowedUrls.some(url => {
-          // Convert wildcards to regex pattern
+          Convert wildcards to regex pattern
           const pattern = url
-            .replace(/\./g, '\\.')
-            .replace(/\*/g, '.*');
+            .replace(/\\./g, '.')
+            .replace(/\\*/g, '.*');
           const regex = new RegExp('^' + pattern + '$');
           return regex.test(currentHost);
         });
@@ -126,7 +125,7 @@ export class ScriptGenerator {
 
   public generateScript(
     conditions: Condition[],
-    allowedUrls: string[]
+    allowedUrls: string[] = []
   ): string {
     const functionDefinitions = conditions.map((condition) => {
       switch (condition.type) {
@@ -146,7 +145,6 @@ export class ScriptGenerator {
           return '';
       }
     });
-
     const script = `
       (async function() {
         ${this.generateUrlValidation(allowedUrls)}

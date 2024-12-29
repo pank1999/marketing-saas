@@ -108,36 +108,102 @@ export default function DashboardPage() {
           </div>
         )}
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {loading ? (
-            <div>Loading projects...</div>
-          ) : (
-            projects.map((project) => (
+        {loading ? (
+          <div className="flex items-center justify-center min-h-[400px]">
+            <div className="animate-pulse text-gray-600">Loading projects...</div>
+          </div>
+        ) : projects.length === 0 ? (
+          <div className="text-center py-12 bg-white rounded-lg shadow-sm">
+            <svg
+              className="mx-auto h-12 w-12 text-gray-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
+              />
+            </svg>
+            <h3 className="mt-4 text-lg font-medium text-gray-900">No projects yet</h3>
+            <p className="mt-1 text-sm text-gray-500">Get started by creating your first project.</p>
+            <button
+              onClick={() => setShowNewProjectModal(true)}
+              className="mt-6 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+            >
+              <svg
+                className="mr-2 -ml-1 h-5 w-5"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                />
+              </svg>
+              Create Project
+            </button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {projects.map((project) => (
               <div
                 key={project.id}
-                className="bg-white overflow-hidden shadow rounded-lg"
+                className="bg-white overflow-hidden shadow-sm rounded-lg hover:shadow-md transition-shadow duration-200"
               >
-                <div className="p-5">
-                  <h3 className="text-lg font-medium text-gray-900">
+                <div className="p-6">
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
                     {project.name}
                   </h3>
-                  <p className="mt-1 text-gray-600">{project.description}</p>
-                  <p className="mt-2 text-sm text-gray-500">
-                    Created on {new Date(project.createdAt).toLocaleDateString()}
-                  </p>
+                  <p className="text-gray-600 mb-4 line-clamp-2">{project.description}</p>
+                  <div className="flex items-center text-sm text-gray-500">
+                    <svg
+                      className="mr-1.5 h-5 w-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                      />
+                    </svg>
+                    Created {new Date(project.createdAt).toLocaleDateString()}
+                  </div>
                 </div>
-                <div className="bg-gray-50 px-5 py-3">
+                <div className="bg-gray-50 px-6 py-4">
                   <button
                     onClick={() => router.push(`/dashboard/projects/${project.id}`)}
-                    className="text-sm text-blue-600 hover:text-blue-900"
+                    className="w-full text-center text-blue-600 hover:text-blue-900 font-medium flex items-center justify-center"
                   >
-                    View Details →
+                    View Details
+                    <svg
+                      className="ml-2 h-4 w-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 5l7 7-7 7"
+                      />
+                    </svg>
                   </button>
                 </div>
               </div>
-            ))
-          )}
-        </div>
+            ))}
+          </div>
+        )}
       </main>
 
       {showNewProjectModal && (

@@ -25,6 +25,7 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
     name: '',
     description: '',
   });
+  const [activeTab, setActiveTab] = useState<'details' | 'conditions' | 'script'>('details');
 
   useEffect(() => {
     fetchProject();
@@ -105,13 +106,120 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
         <div className="flex justify-between items-center mb-6">
           <button
             onClick={() => router.push('/dashboard')}
-            className="text-blue-600 hover:text-blue-800"
+            className="text-blue-600 hover:text-blue-800 flex items-center"
           >
-            ← Back to Dashboard
+            <svg
+              className="mr-2 h-5 w-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M10 19l-7-7m0 0l7-7m-7 7h18"
+              />
+            </svg>
+            Back to Dashboard
           </button>
-          <div className="space-x-2">
+        </div>
+
+        {/* Project Header */}
+        <div className="bg-white shadow-sm rounded-lg p-6 mb-6">
+          <h1 className="text-2xl font-bold text-gray-900">{project?.name}</h1>
+          <p className="text-gray-500 mt-1">
+            Created on {new Date(project?.createdAt || '').toLocaleDateString()}
+          </p>
+        </div>
+
+        {/* Tabs */}
+        <div className="border-b border-gray-200 mb-6">
+          <nav className="-mb-px flex space-x-8">
+            {['details', 'conditions', 'script'].map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab as any)}
+                className={`
+                  whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
+                  ${
+                    activeTab === tab
+                      ? 'border-blue-500 text-blue-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }
+                `}
+              >
+                {tab.charAt(0).toUpperCase() + tab.slice(1)}
+              </button>
+            ))}
+          </nav>
+        </div>
+
+        {/* Tab Content */}
+        {activeTab === 'details' && (
+          <div className="space-y-6">
+            {isEditing ? (
+              <form onSubmit={handleUpdate} className="space-y-4 border-2 p-4 border-gray-300 rounded-lg">
+                <span className="text-lg font-semibold">Edit Details</span>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Project Name
+                  </label>
+                  <input
+                    type="text"
+                    value={editForm.name}
+                    onChange={(e) =>
+                      setEditForm({ ...editForm, name: e.target.value })
+                    }
+                    className="mt-1 p-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Description
+                  </label>
+                  <textarea
+                    value={editForm.description}
+                    onChange={(e) =>
+                      setEditForm({ ...editForm, description: e.target.value })
+                    }
+                    rows={3}
+                    className="mt-1 p-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  />
+                </div>
+                <div className="flex justify-end space-x-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsEditing(false)}
+                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
+                  >
+                    Save Changes
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <div className="bg-white shadow overflow-hidden sm:rounded-lg">
+                <div className="px-4 py-5 sm:px-6">
+                  <h3 className="text-lg leading-6 font-medium text-gray-900">
+                    {project.name}
+                  </h3>
+                  <p className="mt-1 max-w-2xl text-sm text-gray-500">
+                    Created on {new Date(project.createdAt).toLocaleDateString()}
+                  </p>
+                </div>
+                <div className="border-t border-gray-200 px-4 py-5 sm:px-6">
+                  <p className="text-gray-700">{project.description}</p>
+                </div>
+              </div>
+            )}
             {!isEditing && (
-              <>
+              <div className="flex space-x-4">
                 <button
                   onClick={() => setIsEditing(true)}
                   className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
@@ -124,74 +232,13 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
                 >
                   Delete Project
                 </button>
-              </>
+              </div>
             )}
-          </div>
-        </div>
-
-        {isEditing ? (
-          <form onSubmit={handleUpdate} className="space-y-4 border-2 p-4 border-gray-300 rounded-lg">
-            <span className="text-lg font-semibold">Edit Details</span>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Project Name
-              </label>
-              <input
-                type="text"
-                value={editForm.name}
-                onChange={(e) =>
-                  setEditForm({ ...editForm, name: e.target.value })
-                }
-                className="mt-1 p-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Description
-              </label>
-              <textarea
-                value={editForm.description}
-                onChange={(e) =>
-                  setEditForm({ ...editForm, description: e.target.value })
-                }
-                rows={3}
-                className="mt-1 p-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              />
-            </div>
-            <div className="flex justify-end space-x-2">
-              <button
-                type="button"
-                onClick={() => setIsEditing(false)}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700"
-              >
-                Save Changes
-              </button>
-            </div>
-          </form>
-        ) : (
-          <div className="bg-white shadow overflow-hidden sm:rounded-lg">
-            <div className="px-4 py-5 sm:px-6">
-              <h3 className="text-lg leading-6 font-medium text-gray-900">
-                {project.name}
-              </h3>
-              <p className="mt-1 max-w-2xl text-sm text-gray-500">
-                Created on {new Date(project.createdAt).toLocaleDateString()}
-              </p>
-            </div>
-            <div className="border-t border-gray-200 px-4 py-5 sm:px-6">
-              <p className="text-gray-700">{project.description}</p>
-            </div>
           </div>
         )}
 
-        <Conditions projectId={project.id} />
-        <ScriptInfo projectId={project.id} />
+        {activeTab === 'conditions' && <Conditions projectId={Number(params.id)} />}
+        {activeTab === 'script' && <ScriptInfo projectId={Number(params.id)} />}
       </div>
     </div>
   );

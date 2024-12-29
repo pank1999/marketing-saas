@@ -34,12 +34,12 @@ spec:
               memory: '1Gi'
           readinessProbe:
             exec:
-              command: ['pg_isready', '-U', '$(POSTGRES_USER)']
+              command: ['pg_isready', '-U', 'marketing_saas']
             initialDelaySeconds: 5
             periodSeconds: 10
           livenessProbe:
             exec:
-              command: ['pg_isready', '-U', '$(POSTGRES_USER)']
+              command: ['pg_isready', '-U', 'marketing_saas']
             initialDelaySeconds: 30
             periodSeconds: 20
   volumeClaimTemplates:
