@@ -30,9 +30,13 @@ export default function SignupPage() {
   };
 
     useEffect(() => {
-      if (authService.isAuthenticated()) {
-        router.push('/dashboard');
-      }
+      const checkAuth = async () => {
+        const authenticated = await authService.isAuthenticated();
+        if (authenticated) {
+          router.push('/dashboard');
+        }
+      };
+      checkAuth();
     }, [router]);
 
 
