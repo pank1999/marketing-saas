@@ -8,7 +8,7 @@ import conditionRoutes from './routes/condition.routes';
 import weatherRoutes from './routes/weather.routes';
 import scriptRoutes from './routes/script.routes';
 import dotenv from 'dotenv';
-
+import { testConnection } from '@libs/prisma/prisma';
 const app = express();
 
 dotenv.config();
@@ -45,11 +45,10 @@ app.get('/api/health', (req, res) => {
 
 const port = process.env['PORT'] || 3000;
 const server = app.listen(port, () => {
-  console.log(`Listening at http://localhost:${port}/api`);
+  console.log(`Server Listening at port ${port}`);
+  testConnection().then((result) => {
+    console.log('Database connection test result:', result);
+  });
 });
-
-// Configure server timeouts
-server.timeout = 30000; // 30 seconds
-server.keepAliveTimeout = 65000; // Recommended to be higher than timeout
 
 server.on('error', console.error);

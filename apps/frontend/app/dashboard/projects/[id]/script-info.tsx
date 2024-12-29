@@ -70,7 +70,6 @@ export default function ScriptInfo({ projectId }: ScriptInfoProps) {
 
     try {
       const token = authService.getToken();
-      console.log('token', token);
       const response = await fetch(`${API_URL}/projects/${projectId}/allowed-urls`, {
         method: 'PUT',
         headers: {
@@ -81,7 +80,6 @@ export default function ScriptInfo({ projectId }: ScriptInfoProps) {
           allowedUrls: scriptInfo.allowedUrls ? [...scriptInfo.allowedUrls, newUrl] : [newUrl],
         }),
       });
-      console.log('response', response);
 
       if (!response.ok) throw new Error('Failed to update allowed URLs');
       
@@ -93,7 +91,6 @@ export default function ScriptInfo({ projectId }: ScriptInfoProps) {
       setNewUrl('');
       setShowUrlModal(false);
     } catch (err) {
-      console.log(err)
       setError('Failed to update allowed URLs');
     }
   };

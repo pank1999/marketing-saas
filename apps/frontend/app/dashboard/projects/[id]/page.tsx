@@ -28,8 +28,13 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
   const [activeTab, setActiveTab] = useState<'details' | 'conditions' | 'script'>('details');
 
   useEffect(() => {
+    const token = authService.getToken();
+    if (!token) {
+      router.push('/login');
+      return;
+    }
     fetchProject();
-  }, [params.id]);
+  }, [params.id, router]);
 
   const fetchProject = async () => {
     try {

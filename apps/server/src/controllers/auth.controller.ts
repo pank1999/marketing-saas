@@ -1,13 +1,12 @@
 import { Request, Response } from 'express';
 import * as bcrypt from 'bcryptjs';
 import * as jwt from 'jsonwebtoken';
-import prisma from '@libs/prisma';
+import prisma from '@libs/prisma/prisma';
 
 export class AuthController {
   async signup(req: Request, res: Response) {
     try {
       const { email, password, name } = req.body;
-      console.log(req.body);
       // Check if user already exists
       const existingUser = await prisma.user.findUnique({
         where: { email },
@@ -49,11 +48,9 @@ export class AuthController {
   async login(req: Request, res: Response) {
     try {
       const { email, password } = req.body;
-      console.log('Login', req.body);
       const user = await prisma.user.findUnique({
         where: { email },
       });
-      console.log('User', user);
       if (!user) {
         return res.status(401).json({ message: 'Invalid credentials' });
       }

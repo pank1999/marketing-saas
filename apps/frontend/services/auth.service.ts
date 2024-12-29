@@ -4,12 +4,10 @@ import {
   SignupCredentials,
 } from '../types/auth';
 
-const API_URL =
-  process.env.NEXT_PUBLIC_API_URL ||
-  'https://marketing-saas.pankajpandey.dev/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
 
 class AuthService {
-  private token: string | null = null;
+  private tokenKey = 'marketing-saas-token';
 
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
     const response = await fetch(`${API_URL}/auth/login`, {
@@ -26,7 +24,7 @@ class AuthService {
     }
 
     const data = await response.json();
-    this.saveToken(data.token);
+    this.setToken(data.token);
     return data;
   }
 
@@ -45,37 +43,34 @@ class AuthService {
     }
 
     const data = await response.json();
-    this.saveToken(data.token);
+    this.setToken(data.token);
     return data;
   }
 
-  saveToken(token: string): void {
-    this.token = token;
-    if (typeof window !== 'undefined') {
-      window.localStorage.setItem('token', token);
-    }
-  }
-
   getToken(): string | null {
-    if (this.token) return this.token;
     if (typeof window !== 'undefined') {
-      const token = window.localStorage.getItem('token');
-      if (token) this.token = token;
+      const token = localStorage.getItem(this.tokenKey);
       return token;
     }
     return null;
   }
 
-  removeToken(): void {
-    this.token = null;
-    if (typeof window !== 'undefined') {
-      window.localStorage.removeItem('token');
-    }
+  setToken(token: string): void {
+    localStorage.setItem(this.tokenKey, token);
   }
 
-  isAuthenticated(): Promise<boolean> {
+  removeToken(): void {
+    localStorage.removeItem(this.tokenKey);
+  }
+
+  async isAuthenticated(): Promise<boolean> {
     return new Promise((resolve) => {
-      resolve(!!this.getToken());
+      if (typeof window !== 'undefined') {
+        const token = localStorage.getItem(this.tokenKey);
+        resolve(!!token);
+      } else {
+        resolve(false);
+      }
     });
   }
 }

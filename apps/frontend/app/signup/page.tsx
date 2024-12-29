@@ -29,11 +29,11 @@ export default function SignupPage() {
     }));
   };
 
-  useEffect(() => {
-    authService.isAuthenticated().then((isAuthenticated) => {
-      isAuthenticated && router.push('/dashboard');
-    });
-  }, [router]);
+    useEffect(() => {
+      if (authService.isAuthenticated()) {
+        router.push('/dashboard');
+      }
+    }, [router]);
 
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -55,7 +55,7 @@ export default function SignupPage() {
 
     try {
       const response = await authService.signup(formData);
-      authService.saveToken(response.token);
+      authService.setToken(response.token);
       router.push('/dashboard');
       router.refresh(); // Force a refresh of the navigation
     } catch (err) {

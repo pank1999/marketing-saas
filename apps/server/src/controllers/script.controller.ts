@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import prisma from '@libs/prisma';
+import prisma from '@libs/prisma/prisma';
 import { ScriptGenerator } from '../services/script-generator.service';
 import { AuthenticatedRequest } from '../types/auth';
 

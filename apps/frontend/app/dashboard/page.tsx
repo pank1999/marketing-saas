@@ -11,7 +11,7 @@ interface Project {
   createdAt: string;
 }
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://marketing-saas.pankajpandey.dev/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -25,8 +25,17 @@ export default function DashboardPage() {
   });
 
   useEffect(() => {
-    fetchProjects();
-  }, []);
+    const init = async () => {
+      const authenticated = await authService.isAuthenticated();
+      if (!authenticated) {
+        router.push('/login');
+        return;
+      }
+      fetchProjects();
+    };
+
+    init();
+  }, [router]);
 
   const fetchProjects = async () => {
     try {

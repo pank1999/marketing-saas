@@ -1,5 +1,5 @@
 import { Response } from 'express';
-import prisma from '@libs/prisma';
+import prisma from '@libs/prisma/prisma';
 import { AuthenticatedRequest } from '../types/auth';
 
 export class ProjectController {
@@ -134,7 +134,6 @@ export class ProjectController {
       where: { id: parseInt(id) },
       data: { allowedUrls },
     });
-    console.log('updatedProject', updatedProject);
 
     res.json(updatedProject);
   }
