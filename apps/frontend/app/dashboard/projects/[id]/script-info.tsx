@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react';
 import { authService } from '../../../../services/auth.service';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://marketing-saas.pankajpandey.dev/api';
+const API_URL =
+  process.env['NEXT_PUBLIC_API_URL'] || 'https://marketing-saas.pankajpandey.dev/api';
 
 interface ScriptInfo {
   scriptUrl: string;

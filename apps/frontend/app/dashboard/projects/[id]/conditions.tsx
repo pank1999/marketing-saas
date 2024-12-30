@@ -11,7 +11,7 @@ import {
   TEMPERATURE_RANGES,
 } from '../../../../types/condition';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://marketing-saas.pankajpandey.dev/api';
+const API_URL = process.env['NEXT_PUBLIC_API_URL'] || 'https://marketing-saas.pankajpandey.dev/api';
 
 interface ConditionsProps {
   projectId: number;
